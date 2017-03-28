@@ -1,0 +1,507 @@
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
+
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+-- -----------------------------------------------------
+-- Schema kjl_csci4850
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema kjl_csci4850
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `kjl_csci4850` DEFAULT CHARACTER SET latin1 ;
+USE `kjl_csci4850` ;
+
+-- -----------------------------------------------------
+-- Table `kjl_csci4850`.`Bowler`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `kjl_csci4850`.`Bowler` (
+  `ID` INT(11) NOT NULL AUTO_INCREMENT,
+  `FirstName` VARCHAR(30) NOT NULL,
+  `LastName` VARCHAR(30) NULL DEFAULT NULL,
+  `PhoneNumber` VARCHAR(15) NULL DEFAULT NULL,
+  `Email` VARCHAR(40) NULL DEFAULT NULL,
+  `IsAdult` INT(1) NOT NULL COMMENT 'Bowler is either an Adult or Youth.  If the flag is set to one the bowler is an adult then the flag is set to 1 else if the flag is 0 the bowler is youth.  Note: due to privacy the youth must be at least 13.',
+  `Gender` VARCHAR(1) NULL DEFAULT NULL COMMENT 'If a bowler is Male the flag will be M if the bowler is Female the flag will be set to F.',
+  `IsCurrentLeagueMember` INT(1) NOT NULL COMMENT 'If the Bowler is a current league member this value is set to one else it is set to zero.',
+  PRIMARY KEY (`ID`))
+ENGINE = MyISAM
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `kjl_csci4850`.`HonorScore`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `kjl_csci4850`.`HonorScore` (
+  `ID` INT(11) NOT NULL AUTO_INCREMENT,
+  `is300` INT(1) NOT NULL DEFAULT '0',
+  `is299` INT(1) NOT NULL DEFAULT '0',
+  `is298` INT(1) NOT NULL DEFAULT '0',
+  `is800` INT(1) NOT NULL DEFAULT '0',
+  `Game1` INT(3) NULL DEFAULT '0',
+  `Game2` INT(3) NULL DEFAULT '0',
+  `Game3` INT(3) NULL DEFAULT '0',
+  `isSanctioned` INT(1) NOT NULL DEFAULT '1',
+  `Bowler_ID` INT(11) NOT NULL,
+  PRIMARY KEY (`ID`),
+  INDEX `fk_HonorScore_Bowler1_idx` (`Bowler_ID` ASC))
+ENGINE = MyISAM
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `kjl_csci4850`.`LeagueType`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `kjl_csci4850`.`LeagueType` (
+  `ID` INT(11) NOT NULL AUTO_INCREMENT,
+  `isMixed` INT(1) NOT NULL,
+  `isCrazyMixed` INT(1) NOT NULL,
+  `isMens` INT(1) NOT NULL,
+  `isWomens` INT(1) NOT NULL,
+  `isHandicaped` INT(1) NOT NULL,
+  `isScratch` INT(1) NOT NULL,
+  `HandicapBase` INT(3) NULL DEFAULT NULL,
+  `HandicapPercent` INT(3) NULL DEFAULT NULL,
+  PRIMARY KEY (`ID`))
+ENGINE = MyISAM
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `kjl_csci4850`.`League`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `kjl_csci4850`.`League` (
+  `ID` INT(11) NOT NULL AUTO_INCREMENT,
+  `Name` VARCHAR(40) NOT NULL,
+  `MembersPerTeam` INT(1) NOT NULL,
+  `isSanctioned` INT(1) NOT NULL COMMENT 'Value is 0 if the league is not sanctioned and 1 if the league is sanctioned.',
+  `isFull` INT(1) NOT NULL COMMENT 'Value is 0 if the league needs teams and is 1 if the league is full.',
+  `LeagueType_ID` INT(11) NOT NULL,
+  PRIMARY KEY (`ID`),
+  INDEX `fk_League_LeagueType1_idx` (`LeagueType_ID` ASC))
+ENGINE = MyISAM
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `kjl_csci4850`.`Role`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `kjl_csci4850`.`Role` (
+  `ID` INT(11) NOT NULL AUTO_INCREMENT,
+  `canCreate` INT(1) NOT NULL,
+  `canDelete` INT(1) NOT NULL,
+  `canUpdate` INT(1) NOT NULL,
+  `canRead` INT(1) NOT NULL,
+  PRIMARY KEY (`ID`))
+ENGINE = MyISAM
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `kjl_csci4850`.`Sanction`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `kjl_csci4850`.`Sanction` (
+  `SanctionNumber` VARCHAR(10) NOT NULL,
+  `ExpirationDate` DATE NULL DEFAULT NULL,
+  `Bowler_ID` INT(11) NOT NULL,
+  PRIMARY KEY (`SanctionNumber`, `Bowler_ID`),
+  INDEX `fk_Sanction_Bowler1_idx` (`Bowler_ID` ASC))
+ENGINE = MyISAM
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `kjl_csci4850`.`Team`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `kjl_csci4850`.`Team` (
+  `ID` INT(11) NOT NULL AUTO_INCREMENT,
+  `CaptainID` INT(11) NOT NULL,
+  `isActive` INT(1) NOT NULL,
+  PRIMARY KEY (`ID`))
+ENGINE = MyISAM
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `kjl_csci4850`.`Tournament`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `kjl_csci4850`.`Tournament` (
+  `ID` INT(11) NOT NULL AUTO_INCREMENT,
+  `Name` VARCHAR(30) NOT NULL,
+  `Date` VARCHAR(30) NOT NULL,
+  `HostCenter` VARCHAR(30) NOT NULL,
+  `isScratch` INT(1) NOT NULL,
+  `isHandicaped` INT(1) NOT NULL,
+  `hasDoubles` INT(1) NOT NULL,
+  `hasSingles` INT(1) NOT NULL,
+  `TeamSize` INT(1) NOT NULL,
+  `Cost` FLOAT NULL DEFAULT NULL,
+  PRIMARY KEY (`ID`))
+ENGINE = MyISAM
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `kjl_csci4850`.`User`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `kjl_csci4850`.`User` (
+  `ID` INT(11) NOT NULL AUTO_INCREMENT,
+  `FirstName` VARCHAR(30) NOT NULL,
+  `LastName` VARCHAR(30) NOT NULL,
+  `Email` VARCHAR(30) NOT NULL,
+  `Phone` VARCHAR(10) NULL DEFAULT NULL,
+  `Password` VARCHAR(80) NOT NULL,
+  `Role_ID` INT(11) NOT NULL,
+  PRIMARY KEY (`ID`),
+  UNIQUE INDEX `Email` (`Email` ASC),
+  INDEX `fk_User_Role_idx` (`Role_ID` ASC))
+ENGINE = MyISAM
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `kjl_csci4850`.`LeagueTeamLink`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `kjl_csci4850`.`LeagueTeamLink` (
+  `League_ID` INT(11) NOT NULL,
+  `Team_ID` INT(11) NOT NULL,
+  PRIMARY KEY (`League_ID`, `Team_ID`),
+  INDEX `fk_League_has_Team_Team1_idx` (`Team_ID` ASC),
+  INDEX `fk_League_has_Team_League1_idx` (`League_ID` ASC))
+ENGINE = MyISAM
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `kjl_csci4850`.`BowlerTeamLink`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `kjl_csci4850`.`BowlerTeamLink` (
+  `Team_ID` INT(11) NOT NULL,
+  `Bowler_ID` INT(11) NOT NULL,
+  PRIMARY KEY (`Team_ID`, `Bowler_ID`),
+  INDEX `fk_Team_has_Bowler_Bowler1_idx` (`Bowler_ID` ASC),
+  INDEX `fk_Team_has_Bowler_Team1_idx` (`Team_ID` ASC))
+ENGINE = MyISAM
+DEFAULT CHARACTER SET = latin1;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+/*  
+    This will create the data for league types,  it will create mens, womens, 
+    mixed, crazy mixed, handicapped, and scratch leagues...  Please do not
+    run this script more than once.
+*/
+INSERT INTO `kjl_csci4850`.`LeagueType` (`ID`, `isMixed`, `isCrazyMixed`, `isMens`, `isWomens`, `isHandicaped`, `isScratch`, `HandicapBase`, `HandicapPercent`) VALUES 
+(NULL, '1', '0', '0', '0', '1', '0', '200', '95'), 
+(NULL, '0', '0', '1', '0', '1', '0', '225', '60'),
+(NULL, '1', '0', '0', '0', '1', '0', '225', '90'), 
+(NULL, '0', '0', '1', '0', '0', '1', NULL, NULL),
+(NULL, '0', '1', '0', '0', '1', '0', '225', '90'), 
+(NULL, '0', '0', '0', '1', '1', '0', '180', '100'),
+(NULL, '1', '0', '0', '0', '1', '0', '200', '80'), 
+(NULL, '0', '0', '1', '0', '1', '0', '225', '85'),
+(NULL, '1', '0', '0', '0', '1', '0', '200', '90'), 
+(NULL, '0', '0', '1', '0', '0', '1', NULL, NULL),
+(NULL, '1', '0', '0', '0', '1', '0', '210', '80'), 
+(NULL, '0', '0', '1', '0', '1', '0', '225', '85');
+
+
+/*
+   This will create some sample people for our bowling leagues.  It creates
+   both genders as well as adult and youth bowlers.
+*/
+INSERT INTO `kjl_csci4850`.`Bowler` (`ID`, `FirstName`, `LastName`, `PhoneNumber`, `Email`, `IsAdult`, `Gender`, `IsCurrentLeagueMember`) VALUES 
+(NULL, 'Kyle', 'Leonard', '8007902305', 'kyle@doe.com', '1', 'M', '1'),
+(NULL, 'Jake', 'George', '4023321234', NULL, '1', 'M', '1'),
+(NULL, 'Kim', 'Smith', '4025005455', 'ksmith13@yahoo.com', '1', 'F', '0'),
+(NULL, 'Pat', 'Doe', '4023225456', NULL, '0', 'F', '1'),
+(NULL, 'Joe', 'Patton', '4028755756', 'JoePatton@cox.net', '1', 'M', '1'),
+(NULL, 'Katie', 'Cooper', '7123456565', 'katiecoop@ymail.com', '1', 'F', '1'),
+(NULL, 'Tyler', 'Matson', '4027654578', 'tylerMatson@gmail.com', '0', 'M', '0'),
+(NULL, 'Elise', 'Lubbers', '4022345654', 'elubbers@earthlink.net', '1', 'F', '1'),
+(NULL, 'Kylee', 'Giovatella', '4028675767', 'ILoveCats876@hotmail.com', '1', 'F', '1'),
+(NULL, 'Rachael', 'Loki', '4021246546', NULL, '1', 'F', '1'),
+(NULL, 'Josie', 'Smith', '7124567867', 'jsmith@centurylink.com', '1', 'F', '1'),
+(NULL, 'Taylor', 'Jones', '4025756546', 'tjones@up.com', '0', 'M', '0'),
+(NULL, 'Kayla', 'Lee', '4029876535', NULL, '1', 'F', '1'),
+(NULL, 'Sydney', 'Parsage', '4027435675', 'sparsage@ngc.com', '1', 'F', '1'),
+(NULL, 'Amanda', 'Nemitz', '4025973456', 'anemitz@unomaha.edu', '1', 'F', '1'),
+(NULL, 'Oscar', 'Metz', '4029786456', 'oscarTheGrouch@psd.com', '1', 'M', '1'),
+(NULL, 'John', 'Hassler', '4028764566', 'jHass@Freemail.org', '0', 'M', '0'),
+(NULL, 'Jane', 'Johnson', '4021423646', NULL, '1', 'F', '1'),
+(NULL, 'Kyle', 'Abbot', '4025945673', 'abbot@jmail.com', '1', 'M', '1'),
+(NULL, 'Andrew', 'Bush', '4028745423', 'Andrew@bushemail.com', '1', 'M', '1'),
+(NULL, 'Reagan', 'Tyler', '4027653456', NULL, '0', 'F', '1'),
+(NULL, 'George', 'Storavich', '4029678253', NULL, '1', 'M', '0'),
+(NULL, 'Kyler', 'Baker', '4087646456', NULL, '1', 'M', '1'),
+(NULL, 'AJ', 'Norris', '4025245345',  NULL, '1', 'M', '1'),
+(NULL, 'Trisha', 'Stahl', '4021657745', 'trish@fmne.com', '0', 'F', '1'),
+(NULL, 'Laurie', 'Rhuke', '4025875522', 'laurie@example.com', '1', 'F', '1'),
+(NULL, 'Katrina', 'Lemon', '4025342344', 'katlemon@smlisjunk.com', '1', 'F', '0');
+
+
+/*
+   This will create the honor scores table.  This links bowlers and honor scores,
+    honor scores are scores that a bowler would get an award for.
+*/
+INSERT INTO `kjl_csci4850`.`HonorScore` (`ID`, `is300`, `is299`, `is298`, `is800`, `Game1`, `Game2`, `Game3`, `isSanctioned`, `Bowler_ID`) VALUES 
+(NULL, '1', '0', '0', '0', '0', '300', '0', '1', '1'),
+(NULL, '0', '1', '0', '0', '0', '0', '299', '1', '1'),
+(NULL, '0', '0', '0', '1', '245', '279', '294', '1', '2'),
+(NULL, '0', '1', '0', '0', '299', '0', '0', '0', '5'),
+(NULL, '0', '0', '0', '1', '227', '280', '275', '1', '7'),
+(NULL, '1', '0', '0', '0', '300', '0', '0', '1', '3'),
+(NULL, '0', '0', '1', '0', '0', '298', '0', '1', '1'),
+(NULL, '0', '0', '1', '0', '0', '0', '298', '0', '2'),
+(NULL, '0', '1', '0', '0', '0', '0', '299', '1', '1'),
+(NULL, '1', '0', '0', '0', '0', '0', '300', '1', '4'),
+(NULL, '0', '0', '0', '1', '250', '270', '280', '0', '3');
+
+/*
+	This will insert some tournaments into the database.
+*/
+INSERT INTO `kjl_csci4850`.`Tournament` (`ID`, `Name`, `Date`, `HostCenter`, `isScratch`, `isHandicaped`, `hasDoubles`, `hasSingles`, `TeamSize`, `Cost`) VALUES 
+(NULL, 'Ladies Memorial', '11-23-2017', 'Western Bowl', '1', '0', '0', '0', '4', NULL),
+(NULL, 'Ice Bowl', '2-23-2017', 'Scorz', '1', '0', '0', '0', '4', 20.00),
+(NULL, 'Sandhills', '1-2-2017', 'Sunset Bowl', '1', '0', '1', '1', '5', NULL),
+(NULL, 'Pepsi', '4-1-2017', 'Valley Fun Center', '0', '1', '0', '1', '1', 0.00);
+
+/*
+	This will assign team captains to the teams
+*/
+INSERT INTO `kjl_csci4850`.`Team` (`ID`, `CaptainID`, `isActive`) VALUES 
+(NULL, '1', '1'),
+(NULL, '3', '0'),
+(NULL, '6', '0'),
+(NULL, '17', '1'),
+(NULL, '13', '1'),
+(NULL, '1', '0'),
+(NULL, '18', '0'),
+(NULL, '24', '1');
+
+
+/*
+	This will insert sanction information into the database.
+*/
+INSERT INTO `kjl_csci4850`.`Sanction` (`SanctionNumber`, `ExpirationDate`, `Bowler_ID`) VALUES 
+('11-123456', '2018-03-01', '1'),
+('11-124213', '2017-12-01', '9'),
+('11-176454', '2016-02-01', '3'),
+('11-176345', '2018-01-08', '14'),
+('11-128546', '2014-12-01', '17'),
+('11-764355', '2013-09-06', '21'),
+('11-865674', '2017-05-05', '2'),
+('11-105647', '2016-09-27', '16'),
+('11-134579', '2017-06-16', '12'),
+('11-134325', '2012-04-23', '8'),
+('16-134556', '2015-05-12', '4');
+
+
+/*
+	This inserts data into the league table.
+*/
+INSERT INTO `kjl_csci4850`.`League` (`ID`, `Name`, `MembersPerTeam`, `isSanctioned`, `isFull`, `LeagueType_ID`) VALUES 
+(NULL, 'Family Two-Some', '3', '0', '1', '3'),
+(NULL, 'Friends and Neighbors', '4', '0', '0', '2'),
+(NULL, 'Calamity Jane', '3', '1', '1', '1'),
+(NULL, 'Sunday Night Mixed', '4', '1', '0', '1'),
+(NULL, 'Tri-County', '2', '1', '1', '2'),
+(NULL, 'Jr. Mixers', '4', '0', '1', '4'),
+(NULL, 'Work Service', '4', '0', '0', '6'),
+(NULL, 'Early Birds', '3', '1', '0', '4'),
+(NULL, 'MoonLighters', '4', '0', '1', '5'),
+(NULL, 'Ball League', '5', '1', '0', '7');
+
+/*
+	This puts the teams into the leagues.
+*/
+INSERT INTO `kjl_csci4850`.`LeagueTeamLink` (`League_ID`, `Team_ID`) VALUES
+('1', '2'),
+('2', '3'),
+('3', '4'),
+('1', '1'),
+('1', '3'),
+('4', '5'),
+('2', '1'),
+('2', '2'),
+('3', '5'),
+('2', '4');
+
+/*
+	This puts the bowlers on teams.
+*/
+INSERT INTO `kjl_csci4850`.`BowlerTeamLink` (`Team_ID`, `Bowler_ID`) VALUES 
+('1', '2'),
+('1', '3'),
+('2', '4'),
+('2', '5'),
+('2', '6'),
+('3', '8'),
+('3', '9'),
+('3', '10'),
+('4', '11'),
+('4', '12'),
+('4', '14'),
+('4', '18'),
+('5', '23');
+
+/*
+	This creates the roles.
+*/
+INSERT INTO `kjl_csci4850`.`Role` (`ID`, `canCreate`, `canDelete`, `canUpdate`, `canRead`) VALUES 
+(NULL, '1', '1', '1', '1'),
+(NULL, '1', '0', '1', '1'),
+(NULL, '1', '0', '0', '1'),
+(NULL, '0', '0', '0', '0');
+
+
+/*
+	This will create the users table.
+*/
+INSERT INTO `kjl_csci4850`.`User` (`ID`, `FirstName`, `LastName`, `Email`, `Phone`, `Password`, `Role_ID`) VALUES 
+(NULL, 'Kyle', 'Leonard', 'kyle@omahawesternbowl.com', '8007902305', 'Password1', '1'),
+(NULL, 'Kevin', 'Hamish', 'kevin@omahawesternbowl.com', '4021234323', 'Password2', '2'),
+(NULL, 'Joe', 'Ladwig', 'joe@omahawesternbowl.com', '8005437454', 'Password3', '1'),
+(NULL, 'Derek', 'Howard', 'derek@omahawesternbowl.com', '7127653425', 'Password4', '2'),
+(NULL, 'Tim', 'Lemon', 'tim@omahawesternbowl.com', '4024353237', 'Password5', '3');
+
+
+
+
+
+
+
+
+
+
+/*
+----------------------------------------------------------
+                      SQL Portion
+----------------------------------------------------------
+*/
+
+/*This will be the first Query run when a user logs in!
+Email will be a php form value.*/
+
+SELECT * FROM `User` WHERE `Email` = "kyle@omahawesternbowl.com";
+/*
+Return:
+# ID, FirstName, LastName, Email, Phone, Password, Role_ID
+'1', 'Kyle', 'Leonard', 'kyle@omahawesternbowl.com', '8007902305', 'Password1', '1'
+*/
+
+/*
+// When a user logs in they should see several tables on the homepage
+// They should see a list of bowlers and perhaps a list of leagues
+// and upcoming tournaments.
+*/
+
+Select FirstName, LastName From `Bowler`;
+/*
+'Kyle','Leonard'
+'Jake','George'
+'Kim','Smith'
+'Pat','Doe'
+'Joe','Patton'
+'Katie','Cooper'
+'Tyler','Matson'
+'Elise','Lubbers'
+'Kylee','Giovatella'
+'Rachael','Loki'
+'Josie','Smith'
+'Taylor','Jones'
+'Kayla','Lee'
+'Sydney','Parsage'
+'Amanda','Nemitz'
+'Oscar','Metz'
+'John','Hassler'
+'Jane','Johnson'
+'Kyle','Abbot'
+'Andrew','Bush'
+'Reagan','Tyler'
+'George','Storavich'
+'Kyler','Baker'
+'AJ','Norris'
+'Trisha','Stahl'
+'Laurie','Rhuke'
+'Katrina','Lemon'
+*/
+
+
+Select Name From `Tournament`;
+/*
+'Ladies Memorial'
+'Ice Bowl'
+'Sandhills'
+'Pepsi'
+*/
+
+Select Name From `League`;
+/*
+'Family Two-Some'
+'Friends and Neighbors'
+'Calamity Jane'
+'Sunday Night Mixed'
+'Tri-County'
+'Jr. Mixers'
+'Work Service'
+'Early Birds'
+'MoonLighters'
+'Ball League'
+*/
+
+
+/* 
+	This would be used to remove bowlers who no longer wish
+	to be a part of the database.
+*/
+DELETE FROM `Bowler` WHERE ID = $NUM
+
+/*
+Output:
+1 Row(s) Affected
+*/
+
+
+/*
+	This Query Returns all the teams a bowler is on.
+*/
+
+SELECT * FROM `Team` WHERE ID = (SELECT Team_ID FROM `BowlerTeamLink` WHERE Bowler_ID = 2);
+
+/*
+	# ID, CaptainID, isActive
+	'1', '1', '1'
+
+*/
+
+
+/*
+	This Query will be used to edit details about bowlers
+*/
+
+UPDATE `Bowler` SET LastName = "Jonas" WHERE ID = 4;
+UPDATE `Bowler` SET PhoneNumber = "2301234323" WHERE ID = 4;
+UPDATE `Bowler` SET Email = "Jonas@cox.net" WHERE ID = 4;
+UPDATE `Bowler` SET IsAdult = "1" WHERE ID = 4;
+UPDATE `Bowler` SET IsCurrentLeagueMember = "0" WHERE ID = 4;
+/*
+	1 Row(s) Affected
+*/
+
+/*
+	This Query will be used to create a new honor score entry.
+*/
+
+INSERT INTO `kjl_csci4850`.`HonorScore` (`ID`, `is300`, `is299`, `is298`, `is800`, `Game1`, `Game2`, `Game3`, `isSanctioned`, `Bowler_ID`) VALUES 
+(NULL, '1', '0', '0', '0', '0', '0', '300', '1', '13');
+
+/*
+	1 Row(s) Inserted
+*/
