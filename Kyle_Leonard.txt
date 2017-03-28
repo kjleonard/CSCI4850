@@ -461,7 +461,7 @@ Select Name From `League`;
 	This would be used to remove bowlers who no longer wish
 	to be a part of the database.
 */
-DELETE FROM `Bowler` WHERE ID = $NUM
+DELETE FROM `Bowler` WHERE ID = 26;
 
 /*
 Output:
@@ -504,4 +504,45 @@ INSERT INTO `kjl_csci4850`.`HonorScore` (`ID`, `is300`, `is299`, `is298`, `is800
 
 /*
 	1 Row(s) Inserted
+*/
+
+
+/*
+	Update League Information
+*/
+UPDATE `League` SET Name = "Moon Lighters" WHERE ID = 9;
+UPDATE `League` SET MembersPerTeam = 3 WHERE ID = 9;
+UPDATE `League` SET IsSanctioned = 1 WHERE ID = 9;
+UPDATE `League` SET IsFull = 0 WHERE ID = 9;
+
+/*
+	1 Row(s) Affected
+*/
+
+
+/*
+	Update Users
+*/
+UPDATE `User` SET LastName = "Jonas" WHERE ID = 4;
+UPDATE `User` SET Phone = "2301234323" WHERE ID = 4;
+UPDATE `User` SET Email = "Jonas@cox.net" WHERE ID = 4;
+UPDATE `User` SET Password = "Password6" WHERE ID = 4;
+UPDATE `User` SET Role_ID = 1 WHERE ID = 4;
+/*
+	1 Row(s) Affected
+*/
+
+
+/*
+-----------------------------------------------------------
+					SQL SPEC
+-----------------------------------------------------------
+
+Foreign keys will be enforced by the database itself as the option
+has been turned on.
+
+Nothing has changed from my original specification, because this
+is a text document the diagram can be found in the repository.
+
+
 */
