@@ -532,6 +532,45 @@ UPDATE `User` SET Role_ID = 1 WHERE ID = 4;
 	1 Row(s) Affected
 */
 
+/*
+	Get Honor Scores sorted by bowler.
+*/
+SELECT * FROM `HonorScore` ORDER BY Bowler_ID;
+
+/*
+'1','1','0','0','0','0','300','0','1','1'
+'9','0','1','0','0','0','0','299','1','1'
+'7','0','0','1','0','0','298','0','1','1'
+'2','0','1','0','0','0','0','299','1','1'
+'3','0','0','0','1','245','279','294','1','2'
+'8','0','0','1','0','0','0','298','0','2'
+'6','1','0','0','0','300','0','0','1','3'
+'11','0','0','0','1','250','270','280','0','3'
+'10','1','0','0','0','0','0','300','1','4'
+'4','0','1','0','0','299','0','0','0','5'
+'5','0','0','0','1','227','280','275','1','7'
+'12','1','0','0','0','0','0','300','1','13'
+*/
+
+/*
+	Get the Names of bowlers that have honor scores and show the flag for 300 games
+*/
+SELECT Bowler.FirstName, Bowler.LastName, HonorScore.is300 FROM `Bowler` NATURAL JOIN `HonorScore`;
+
+/*
+'Kyle','Leonard','1'
+'Jake','George','0'
+'Kim','Smith','0'
+'Pat','Jonas','0'
+'Joe','Patton','0'
+'Katie','Cooper','1'
+'Tyler','Matson','0'
+'Elise','Lubbers','0'
+'Kylee','Giovatella','0'
+'Rachael','Loki','1'
+'Josie','Smith','0'
+'Taylor','Jones','1'
+*/
 
 /*
 -----------------------------------------------------------
